@@ -7,9 +7,17 @@ import "./Migrations.sol";
 contract SmartParking is Migrations{
     ParkingArea[] private parkingArea;
 
-    function addParkingArea(uint8 _price, string _address) public restricted{
-        parkingArea[parkingArea.length] = new ParkingArea(parkingArea.length, _price, _address);
+    function getParkingAreaCount() public view returns (uint){
+        return parkingArea.length;
+    }
+
+    function addParkingArea(uint8 _price, string _address, uint numberOfSpot) public restricted{
+        parkingArea.push(new ParkingArea(parkingArea.length, _price, _address, numberOfSpot));
     } 
+
+    function getParkingArea(uint index) public view returns (ParkingArea){
+        return parkingArea[index];
+    }
 
     function getAllParkingArea() public view returns (ParkingArea[]){
         return parkingArea;
@@ -18,6 +26,5 @@ contract SmartParking is Migrations{
     function isOwner() public view returns (bool){
         return owner == msg.sender;
     }
-
 }
 

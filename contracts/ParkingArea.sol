@@ -4,10 +4,11 @@ import "./ParkingSpot.sol";
 
 contract ParkingArea{
 
-    constructor(uint _id,uint8 _price, string _address) public {
+    constructor(uint _id,uint8 _price, string _address, uint numberOfSpot) public {
         id = _id;
         price = _price;
         addrs = _address;
+        addSpot(numberOfSpot);
     }
 
     function getSpotCount() public view returns (uint){
@@ -25,8 +26,18 @@ contract ParkingArea{
         return lastSpot;
     }
 
-    function addSpot(uint _start, uint _finish, string _plate) public{
-        spot[spot.length] = new ParkingSpot(spot.length, _start, _finish, _plate);
+    function addSpot(uint number) public{
+        for(uint i=0;i<number;i++)
+            spot.push(new ParkingSpot(spot.length));
+    }
+
+    function getId() public view returns (uint){
+        return id;
+    }
+
+    function getSpot(uint index) public view returns (ParkingSpot){
+        require(index<=spot.length);
+        return (spot[index]);
     }
 
     function getAllSpot() public view returns (ParkingSpot[]){

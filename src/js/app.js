@@ -12,6 +12,8 @@ App = {
             if(web3.currentProvider.isMetaMask === true){
                 App.web3Provider = web3.currentProvider;
                 web3 = new Web3(web3.currentProvider);
+                web3.currentProvider.publicConfigStore.on('update', App.render);
+                return App.initContract();
             }else{
                 console.log("metamask is not avitable")
             }
@@ -24,8 +26,6 @@ App = {
             page.hide();
             metamask.show();
         }
-        web3.currentProvider.publicConfigStore.on('update', App.render);
-        return App.initContract();
     },
     
     initContract: function() {
@@ -41,7 +41,6 @@ App = {
     },
     
     render: function() {
-        console.log("render");
         const loader = $("#loader");
         const page = $("#pageLoaded");
         const metamask = $("#installMetamask");
@@ -55,9 +54,7 @@ App = {
             if(err == null)
                 App.account = account;
             if(App.account!=null){
-                $("#WalletAddress").html("Account: " + App.account);
-                const data = new Identicon(App.account).toString();
-                $("#imageUserIdenticon").attr("src","data:image/png;base64,"+data);
+                writeAccountInDom(App.account);
                 loader.hide();
                 page.show();
             }
@@ -74,6 +71,22 @@ App = {
             else
                 createAdminPage();
         })
+    },
+    getAllParkingArea: function(){
+        App.contracts.SmartParking.deployed().then(function(instance){
+            return instance.getAllParkingArea();
+        }).then(function(parkingArea){
+            printParkingArea(parkingArea);
+        })
+    },
+    createNewParkingArea: function(){
+        var price = $("priceOfParkingArea").val();
+        var address = $("addressOfParkingArea").val();
+        var numberOfSpot = $("numberOfSpot").val();
+        App.contracts.SmartParking.deployed().then(function(instance){
+            console.log(instance);
+            return instance.addParkingArea(price,address,numberOfSpot,{from: App.account});
+        });
     }
 };
 
