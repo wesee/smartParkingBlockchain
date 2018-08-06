@@ -11,7 +11,7 @@ contract SmartParking is Migrations{
         return parkingArea.length;
     }
 
-    function addParkingArea(uint8 _price, string _address, uint numberOfSpot) public restricted{
+    function addParkingArea(uint8 _price, string _address, uint numberOfSpot) public {
         parkingArea.push(new ParkingArea(parkingArea.length, _price, _address, numberOfSpot));
     } 
 

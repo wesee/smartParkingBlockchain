@@ -7,7 +7,7 @@ App = {
         return App.initWeb3();
     },
     
-    initWeb3: function() {
+    initWeb3: function(callback) {
         if(typeof web3 !== 'undefined'){
             if(web3.currentProvider.isMetaMask === true){
                 App.web3Provider = web3.currentProvider;
@@ -18,14 +18,13 @@ App = {
                 console.log("metamask is not avitable")
             }
         }else{
-            const loader = $("#loaderMetamask");
+            const loader = $("#loader");
             const page = $("#pageLoaded");
-            const metamask = $("#installMetamask");
             createMetamaskNotFound();
-            loader.hide();
+            loader.show();
             page.hide();
-            metamask.show();
         }
+        return App.initContract();
     },
     
     initContract: function() {
@@ -35,7 +34,7 @@ App = {
             App.listenForEvents();
             return App.render();
         });
-        /*$.getJSON("ParkingArea.json", function(ParkingArea) {
+        $.getJSON("ParkingArea.json", function(ParkingArea) {
             App.contracts.ParkingArea = TruffleContract(ParkingArea);
             App.contracts.ParkingArea.setProvider(App.web3Provider);
             App.listenForEvents();
@@ -46,7 +45,7 @@ App = {
             App.contracts.ParkingSpot.setProvider(App.web3Provider);
             App.listenForEvents();
             return App.render();
-        });*/
+        });
     },
     listenForEvents: function() {
         
@@ -55,10 +54,8 @@ App = {
     render: function() {
         const loader = $("#loader");
         const page = $("#pageLoaded");
-        const metamask = $("#installMetamask");
         
         loader.show();
-        metamask.hide();
         page.hide();
         
         web3.eth.getCoinbase(function(err,account){
@@ -105,6 +102,3 @@ App = {
         });
     }
 };
-
-window.onload = App.init();
-
