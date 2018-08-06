@@ -35,6 +35,18 @@ App = {
             App.listenForEvents();
             return App.render();
         });
+        /*$.getJSON("ParkingArea.json", function(ParkingArea) {
+            App.contracts.ParkingArea = TruffleContract(ParkingArea);
+            App.contracts.ParkingArea.setProvider(App.web3Provider);
+            App.listenForEvents();
+            return App.render();
+        });
+        $.getJSON("ParkingSpot.json", function(ParkingSpot) {
+            App.contracts.ParkingSpot = TruffleContract(ParkingSpot);
+            App.contracts.ParkingSpot.setProvider(App.web3Provider);
+            App.listenForEvents();
+            return App.render();
+        });*/
     },
     listenForEvents: function() {
         
@@ -76,13 +88,17 @@ App = {
         App.contracts.SmartParking.deployed().then(function(instance){
             return instance.getAllParkingArea();
         }).then(function(parkingArea){
-            printParkingArea(parkingArea);
+            let parkingAreaArray = [];
+            for(var i=0; i<parkingArea.length;i++)
+                parkingAreaArray.push(App.contracts.ParkingArea.at(parkingArea[i]));
+            printParkingArea(parkingAreaArray);
         })
     },
     createNewParkingArea: function(){
-        var price = $("priceOfParkingArea").val();
-        var address = $("addressOfParkingArea").val();
-        var numberOfSpot = $("numberOfSpot").val();
+        var price = $("#priceOfParkingArea").val();
+        var address = $("#addressOfParkingArea").val();
+        var numberOfSpot = $("#numberOfSpot").val();
+        console.log(price,address,numberOfSpot)
         App.contracts.SmartParking.deployed().then(function(instance){
             console.log(instance);
             return instance.addParkingArea(price,address,numberOfSpot,{from: App.account});

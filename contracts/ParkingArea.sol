@@ -15,11 +15,19 @@ contract ParkingArea{
         return spot.length;
     }
 
+    function getAvitableSpotCount() public view returns (uint){
+        uint spotAvitable;
+        for(uint i=0; i< spot.length;i++)
+            if(spot[i].isAvitable())
+                spotAvitable++;
+        return spotAvitable;
+    }
+
     function getLastSpot() public view returns (ParkingSpot){
         ParkingSpot lastSpot;
         uint startTmp = 0;
         for(uint i=0;i<getSpotCount();i++)
-            if((spot[i].getStartTime())>= startTmp){
+            if((spot[i].getStartTime())>= startTmp && !spot[i].isAvitable()){
                 lastSpot = spot[i];
                 startTmp = spot[i].getStartTime();
             }

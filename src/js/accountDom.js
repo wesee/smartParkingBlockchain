@@ -12,12 +12,12 @@ function createAdminPage(){
 
 function createMetamaskNoAccount(){
     const selezionareAccount = '<p>Selezionare un account valido su Metamask</p>'
-    $("#errorType").append(selezionareAccount);
+    $("#errorType").html(selezionareAccount);
 }
 
 function createMetamaskNotFound(){
     const selezionareAccount = '<p><b>Metamask non rilevato</b></br>Seleziona il tuo browser e installa l\'estensione!</p><div><button onclick="window.location.href=\'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/\'" type="button" style="margin-right:20px" class="btn bg-orange btn-circle-lg waves-effect waves-circle waves-float"><i class="fa fa-firefox"></i></button><button onclick="window.location.href=\'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn\'" type="button" class="btn bg-cyan btn-circle-lg waves-effect waves-circle waves-float"><i class="fa fa-chrome"></i></button></div>'
-    $("#errorType").append(selezionareAccount);
+    $("#errorType").html(selezionareAccount);
 }
 
 function writeAccountInDom(account){
@@ -27,11 +27,58 @@ function writeAccountInDom(account){
 }
 
 function printParkingArea(parkingArea){
-    console.log("kek");
     let parkingAreaHtml;
-    if(parkingArea.length == 0)
+    if(parkingArea.length == 0){
         parkingAreaHtml = '<div class="block-header"><h2>Non sono disponibili parcheggi, aggiungine uno!</h2></div>'
-    $("#contenuto").html(parkingAreaHtml);
+        $("#contenuto").html(parkingAreaHtml);
+    }
+    else{
+        parkingAreaHtml = ` <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                                Parcheggi Creati
+                            </h2>
+                            <ul class="header-dropdown m-r--5">
+                                <li class="dropdown">
+                                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <i class="material-icons">more_vert</i>
+                                    </a>
+                                    <ul class="dropdown-menu pull-right">
+                                        <li><a href="javascript:void(0);">Action</a></li>
+                                        <li><a href="javascript:void(0);">Another action</a></li>
+                                        <li><a href="javascript:void(0);">Something else here</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="body table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>NUMERO STALLI TOTALI</th>
+                                        <th>STALLI DISPONIBILI</th>
+                                        <th>ULTIMO STALLO OCCUPATO</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+        $("#contenuto").html(parkingAreaHtml);
+        
+        for(let i=0; i<parkingArea.length;i++){
+            parkingArea[i].getId().then(res =>{$("#contenuto").append('<tr><th scope="row">'+res.toNumber()+'</th>')})
+            parkingArea[i].getSpotCount().then(res => $("#contenuto").append('<td>'+res.toNumber()+'</td>'))
+            parkingArea[i].getAvitableSpotCount().then(res => $("#contenuto").append('<td>'+res.toNumber()+'</td>'))
+            parkingArea[i].getLastSpot().then(res => {
+                if(res == 0)
+                    $("#contenuto").append('<td>NAN</td>')
+                else{
+                    return App.contracts.ParkingSpot.at(res);
+                }}).then(res => console.log(res));
+        }
+        $("#contenuto").append('</tbody></table></div></div></div></div>');
+    }
 }
 
 function createFormNewParkingArea(){
