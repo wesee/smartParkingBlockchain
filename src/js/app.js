@@ -34,21 +34,16 @@ App = {
             App.listenForEvents();
             return App.render();
         });
-        $.getJSON("ParkingArea.json", function(ParkingArea) {
-            App.contracts.ParkingArea = TruffleContract(ParkingArea);
-            App.contracts.ParkingArea.setProvider(App.web3Provider);
-            App.listenForEvents();
-            return App.render();
-        });
-        $.getJSON("ParkingSpot.json", function(ParkingSpot) {
-            App.contracts.ParkingSpot = TruffleContract(ParkingSpot);
-            App.contracts.ParkingSpot.setProvider(App.web3Provider);
-            App.listenForEvents();
-            return App.render();
-        });
     },
     listenForEvents: function() {
-        
+        App.contracts.SmartParking.deployed().then(function(instance){
+            instance.spotTaken({},{
+                fromBlock: 0,
+                toBlock: 'latest'
+            }).watch(function(error,event){
+                App.getAllParkingArea()
+            })
+        })
     },
     
     render: function() {
@@ -59,7 +54,6 @@ App = {
         page.hide();
         
         web3.eth.getCoinbase(function(err,account){
-            console.log("error: ", err);
             if(err == null)
                 App.account = account;
             if(App.account!=null){
@@ -83,12 +77,15 @@ App = {
     },
     getAllParkingArea: function(){
         App.contracts.SmartParking.deployed().then(function(instance){
-            return instance.getAllParkingArea();
-        }).then(function(parkingArea){
-            let parkingAreaArray = [];
-            for(var i=0; i<parkingArea.length;i++)
-                parkingAreaArray.push(App.contracts.ParkingArea.at(parkingArea[i]));
-            printParkingArea(parkingAreaArray);
+            var allParkingArea = [];
+            instance.getParkingAreaCount().then(count =>{
+                for(var i=0;i<count.toNumber();i++){
+                    allParkingArea.push(instance.getParkingArea(i));
+                }
+                return allParkingArea;
+            }).then(function(parkingArea){
+                printParkingArea(parkingArea);
+            })
         })
     },
     createNewParkingArea: function(){
@@ -98,7 +95,7 @@ App = {
         console.log(price,address,numberOfSpot)
         App.contracts.SmartParking.deployed().then(function(instance){
             console.log(instance);
-            return instance.addParkingArea(price,address,numberOfSpot,{from: App.account});
+            return instance.addParkingArea(price,address,numberOfSpot,{from: App.account, gasPrice: 2000000000});
         });
     }
 };

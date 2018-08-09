@@ -42,11 +42,6 @@
                     <a href="javascript:void(0);" class="bars"></a>
                     <a class="navbar-brand" href="index.html">Smart Parking - Italdata</a>
                 </div>
-                <div class="collapse navbar-collapse" id="navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="pull-right"><a href="javascript:void(0);" class="js-right-sidebar" data-close="true"><i class="material-icons">more_vert</i></a></li>
-                    </ul>
-                </div>
             </div>
         </nav>
         <section>
@@ -86,6 +81,7 @@
 
         <section class="content">
             <div class="container-fluid">
+                <div id="noSpot"></div>
                 <div id="contenuto">
                     <div class="row clearfix">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -120,7 +116,9 @@
                                         <tbody id="contenutoTabella">
                                         </tbody>
                                     </table>
-                                    <button type="button" onclick="App.getAllParkingArea()" id="refresh" class="btn bg-red waves-effect">Refresh</button>
+                                    <div style="display:flex; flex-direction: row-reverse">
+                                        <button type="button" onclick="App.getAllParkingArea()" id="refresh" class="btn bg-red waves-effect">Refresh</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -155,7 +153,7 @@
     <script src="js/pnglib.js"></script>
     <script src="js/identicon.js"></script>
     <script> window.onload = App.init();</script>
-    <script>setInterval(function () {document.getElementById("refresh").click();}, 3000);</script>
+    <script>setTimeout(function () {document.getElementById("refresh").click();}, 1000);</script>
 </body>
 
 </html>
