@@ -1,5 +1,5 @@
 function createUserPage(){
-    const listaParcheggi = '<ul class="ml-menu"><li><a href="javascript:void(0);">Parcheggi Disponibili</a></li><li><a href="javascript:void(0);">Parcheggi Prenotati</a></li></ul>'
+    const listaParcheggi = '<ul class="ml-menu"><li><a href="prenotaParcheggio.html">Parcheggi Disponibili</a></li><li><a href="javascript:void(0);">Parcheggi Prenotati</a></li></ul>'
     $("#sectionParking > ul").remove();
     $("#sectionParking").append(listaParcheggi);
 }
@@ -26,11 +26,11 @@ function writeAccountInDom(account){
     $("#imageUserIdenticon").attr("src","data:image/png;base64,"+data);
 }
 
-function printParkingArea(parkingArea){
+function printParkingAreaAdmin(parkingArea){
     $("#contenutoTabella").empty();
     $("#noSpot").empty();
     let parkingAreaHtml;
-    if(parkingArea.length == 0){
+    if(parkingArea.lenght == 0){
         parkingAreaHtml = '<div class="block-header"><h2>Non sono disponibili parcheggi, aggiungine uno!</h2></div>'
         $("#noSpot").html(parkingAreaHtml);
     }
@@ -47,7 +47,132 @@ function printParkingArea(parkingArea){
                 else{
                     $("#"+i).append('<td>'+pa[3].toNumber()+'</td>')
                 }
-            })
+            }).then(()=>$("#"+i).append('<td><button onclick="updateParkingArea('+i+')" type="button" class="btn bg-red waves-effect"><i class="material-icons">create</i></button></td>'))
         }
     }
 }
+
+function sendUpdate(id){
+    App.updateParkingArea(id);
+    $("#updateParkingArea").empty();
+}
+
+function updateParkingArea(id){
+    $("#updateParkingArea").empty();
+    $("#updateParkingArea").append(`<div class="row clearfix">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <div class="card">
+                                                <div class="header">
+                                                    <h2>Modifica il parcheggio `+id+`</h2>
+                                            </div>
+                                            <div class="body">
+                                                <form>
+                                                    <div class="row clearfix">
+                                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                                                            <div class="form-group">
+                                                                <div class="form-line">
+                                                                    <input type="number" min="0" class="form-control" id="priceOfParkingArea" placeholder="Prezzo Orario Parcheggio" required>
+                                                                    <div class="help-info">Inserire il prezzo orario del parcheggio</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                                                            <div class="form-group">
+                                                                <div class="form-line">
+                                                                    <input type="text" class="form-control" id="addressOfParkingArea" placeholder="Indirizzo Parcheggio" required>
+                                                                    <div class="help-info">Inserire l\'indirizzo del parcheggio </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                                                            <div class="form-group">
+                                                                <div class="form-line">
+                                                                    <input type="number" min="0" class="form-control" id="numberOfSpot" name="number" placeholder="Numero di posti auto" required>
+                                                                    <div class="help-info">Inserire il numero di posti disponibili</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                            <div class="form-group">
+                                                                    <button type="button" onclick="sendUpdate(`+id+`)" class="btn btn-primary btn-lg m-l-15 waves-effect">Modifica</button>
+                                                            </div>
+                                                        </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`);
+}
+
+
+function printParkingAreaCustomer(parkingArea){
+    $("#contenutoTabella").empty();
+    for(let i=0; i<parkingArea.length;i++){
+        $("#contenutoTabella").append('<tr id='+i+'></tr>');
+        $("#"+i).append(
+                '<th scope="row">'+parkingArea[i].parkingArea[0].toNumber()+'</th>'+
+                '<td>'+parkingArea[i].parkingArea[5]+'</td>'+
+                '<td>'+parkingArea[i].parkingArea[4]+'</td>');
+            if(parkingArea[i].parkingArea[2].toNumber() == 0)
+                $("#"+i).append('<td>Nessun parcheggio disponibile</td>')
+            else{
+                $("#"+i).append('<td>'+parkingArea[i].parkingArea[2].toNumber()+'</td>')
+                $("#"+i).append('<td><button onclick="reserveSpot('+i+',['+parkingArea[i].spot+'])" type="button" class="btn bg-red waves-effect"><i class="material-icons">plus_one</i></button></td>')
+            }
+    }
+}
+
+function reserveSpot(id, spot){
+    $("#reserveSpot").empty();
+    $("#reserveSpot").append(`
+    <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="header">
+                    <h2>INSERIRE DATI PER PRENOTARE POSTO AL PARCHEGGIO `+id+`</h2>
+                </div>
+                <div class="body">
+                    <form id="form_validation" method="POST">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input type="text" class="form-control" name="targa" placeholder="Targa" required>
+                            </div>
+                        </div>
+                        <div class="form-group form-float">
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="startTime" class="datetimepicker form-control" placeholder="Tempo di inizio">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="finishTime" class="datetimepicker form-control" placeholder="Tempo di fine">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                                <select class="form-control show-tick" id="spotSelect">
+                                    <option value="`+spot[Math.floor(Math.random() * spot.length)]+`">-- Selezionare spot --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="App.reserveSpot()" class="btn bg-red waves-effect" type="button">Prenota</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>`);
+    $('#startTime').bootstrapMaterialDatePicker({ format : 'DD/MM/YYYY HH:mm', minDate : new Date()  });
+    $('#finishTime').bootstrapMaterialDatePicker({ format : 'DD/MM/YYYY HH:mm', minDate : new Date()  });
+    for(let s in spot)
+        $("#spotSelect").append('<option value="'+s+'">'+s+'</option>')
+
+
+}
+
+function prova(){
+    
+    console.log(moment($('#datetimepicker1').data('date')).unix())
+}
+

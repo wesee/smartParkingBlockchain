@@ -14,20 +14,21 @@ contract SmartParking is Migrations{
 
     struct ParkingArea{
         uint8 id;
-        bytes16 price;
+        string price;
         string addrs;
         uint16 spotCount;
         int lastSpot;
         mapping(uint16 => Spot) spot;
     }
 
-    function getParkingAreaCount() public view restricted returns(uint){
+    event spotTaken(uint16 id, string palte, address user);
+    event updateArea();
+
+    function getParkingAreaCount() public view returns(uint){
         return parkingArea.length;
     }
-
-    event spotTaken(uint16 id, string palte, address user);
     
-    function addParkingArea(bytes16 _price, string _addrs, uint16 _spotCount) public restricted{
+    function addParkingArea(string _price, string _addrs, uint16 _spotCount) public restricted{
         ParkingArea memory pa;
         parkingArea.push(pa);
         parkingArea[parkingArea.length-1].id = uint8(parkingArea.length-1);
@@ -37,10 +38,11 @@ contract SmartParking is Migrations{
         parkingArea[parkingArea.length-1].lastSpot = -1;
     }
 
-    function updateParkingArea(uint8 id, bytes16 _price, string _addrs, uint16 _spotCount) public restricted{
+    function updateParkingArea(uint8 id, string _price, string _addrs, uint16 _spotCount) public restricted{
         parkingArea[id].price = _price;
         parkingArea[id].addrs = _addrs;
         parkingArea[id].spotCount = _spotCount;
+        emit updateArea();
     }
 
     function isAvitable(uint8 idParkingArea, uint16 idSpot) public view returns (bool){
@@ -70,6 +72,8 @@ contract SmartParking is Migrations{
     function reserveSpot(uint8 idParkingArea, uint16 idSpot, uint _start, uint _finish, string _plate) public{
         require(idParkingArea<parkingArea.length);
         require(idSpot<parkingArea[idParkingArea].spotCount);
+        require(idSpot<parkingArea[idParkingArea].spotCount);
+        require(isAvitable(idParkingArea,idSpot));
         require(_start<_finish);
         parkingArea[idParkingArea].spot[idSpot].start = _start; 
         parkingArea[idParkingArea].spot[idSpot].finish = _finish; 
@@ -79,9 +83,9 @@ contract SmartParking is Migrations{
         emit spotTaken(idSpot,_plate,msg.sender);
     }
 
-    function getParkingArea(uint8 index) public view returns (uint8, uint16, uint16, int){
+    function getParkingArea(uint8 index) public view returns (uint8, uint16, uint16, int,string,string){
         require(index<parkingArea.length);
-        return (parkingArea[index].id,parkingArea[index].spotCount,getSpotsAvitable(index),parkingArea[index].lastSpot);
+        return (parkingArea[index].id,parkingArea[index].spotCount,getSpotsAvitable(index),parkingArea[index].lastSpot,parkingArea[index].price,parkingArea[index].addrs);
     }
 
     function isOwner() public view returns (bool){

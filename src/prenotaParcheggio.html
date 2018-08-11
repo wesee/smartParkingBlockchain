@@ -14,9 +14,9 @@
     <link href="plugins/animate-css/animate.css" rel="stylesheet" />
     <link href="plugins/morrisjs/morris.css" rel="stylesheet" />
     <link href="css/style.css" rel="stylesheet">
+    <link href="plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
     <link href="css/themes/all-themes.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
 </head>
 
 <body class="theme-red">
@@ -82,50 +82,42 @@
 
         <section class="content">
             <div class="container-fluid">
-                <div id="noSpot"></div>
                 <div id="contenuto">
-                    <div class="row clearfix">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <div class="card">
-                                <div class="header">
-                                    <h2>
-                                        Parcheggi Creati
-                                    </h2>
-                                    <ul class="header-dropdown m-r--5">
-                                        <li class="dropdown">
-                                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                <i class="material-icons">more_vert</i>
-                                            </a>
-                                            <ul class="dropdown-menu pull-right">
-                                                <li><a href="javascript:void(0);">Action</a></li>
-                                                <li><a href="javascript:void(0);">Another action</a></li>
-                                                <li><a href="javascript:void(0);">Something else here</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="body table-responsive">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>NUMERO STALLI TOTALI</th>
-                                                <th>STALLI DISPONIBILI</th>
-                                                <th>ULTIMO STALLO OCCUPATO</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="contenutoTabella">
-                                        </tbody>
-                                    </table>
-                                    <div style="display:flex; flex-direction: row-reverse">
-                                        <button type="button" onclick="App.getAllParkingArea()" id="refresh" class="btn bg-red waves-effect">Refresh</button>
+                        <div class="row clearfix">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="card">
+                                        <div class="header" style="display: flex;">
+                                            <h2>SCEGLI PARCHEGGIO</h2>
+                                            <input id="indirizzo" type="text" class="form-control" placeholder="Scrivere indirizzo">
+                                            <button style="margin-left:30px" type="button" class="btn bg-red btn-circle waves-effect waves-circle waves-float">
+                                                <i class="material-icons">search</i>
+                                            </button>
+                                        </div>
+                                        <div class="body" id="listaParcheggi">
+                                            <div class="body table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>INDIRIZZO</th>
+                                                            <th>COSTO ORARIO</th>
+                                                            <th>POSTI DISPONIBILI</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="contenutoTabella">
+                                                    </tbody>
+                                                </table>
+                                                <div style="display:flex; flex-direction: row-reverse">
+                                                    <button type="button" onclick="App.getAllParkingArea()" id="refresh" class="btn bg-red waves-effect">Refresh</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        <div id="reserveSpot"></div>
                     </div>
                 </div>
-                <div id="updateParkingArea"></div>
             </div>
         </section>
     </div>
@@ -141,6 +133,9 @@
     <script src="plugins/chartjs/Chart.bundle.js"></script>
     <script src="plugins/flot-charts/jquery.flot.js"></script>
     <script src="plugins/flot-charts/jquery.flot.resize.js"></script>
+    <script src="http://momentjs.com/downloads/moment-with-locales.js"></script>
+    <script src="http://momentjs.com/downloads/moment.js"></script>
+    <script src="plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
     <script src="plugins/flot-charts/jquery.flot.pie.js"></script>
     <script src="plugins/flot-charts/jquery.flot.categories.js"></script>
     <script src="plugins/flot-charts/jquery.flot.time.js"></script>
@@ -154,8 +149,6 @@
     <script src="js/app.js"></script>
     <script src="js/pnglib.js"></script>
     <script src="js/identicon.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/i18n/defaults-*.min.js"></script>
     <script> window.onload = App.init();</script>
     <script>setTimeout(function () {document.getElementById("refresh").click();}, 1000);</script>
 </body>

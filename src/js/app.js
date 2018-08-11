@@ -2,6 +2,7 @@ App = {
     web3Provider: null,
     contracts: {},
     account: null,
+    isAdmin: false,
 
     init: function() {
         return App.initWeb3();
@@ -40,10 +41,12 @@ App = {
             instance.spotTaken({},{
                 fromBlock: 0,
                 toBlock: 'latest'
-            }).watch(function(error,event){
-                App.getAllParkingArea()
-            })
-        })
+            }).watch((error,event) => App.getAllParkingArea());
+            instance.updateArea({},{
+                fromBlock: 0,
+                toBlock: 'latest'
+            }).watch((error,event) => App.getAllParkingArea())
+        });
     },
     
     render: function() {
@@ -68,7 +71,7 @@ App = {
         App.contracts.SmartParking.deployed().then(function(instance){ 
             return instance.isOwner(); 
         }).then(function(isAdmin){
-            console.log(isAdmin);
+            App.isAdmin = isAdmin;
             if(!isAdmin)
                 createUserPage();
             else
@@ -79,12 +82,26 @@ App = {
         App.contracts.SmartParking.deployed().then(function(instance){
             var allParkingArea = [];
             instance.getParkingAreaCount().then(count =>{
-                for(var i=0;i<count.toNumber();i++){
+                for(let i=0;i<count.toNumber();i++){
                     allParkingArea.push(instance.getParkingArea(i));
                 }
                 return allParkingArea;
-            }).then(function(parkingArea){
-                printParkingArea(parkingArea);
+            }).then(parkingArea =>{
+                if(!App.isAdmin){
+                    var parkingAreaSpot = [];
+                    for(let i = 0; i < parkingArea.length;i++){
+                        parkingArea[i].then((pa)=>{
+                            let spots = [];
+                            for(let i = 0; i < pa[1]; i++)
+                                if(instance.isAvitable(pa[0],i))
+                                    spots.push(i);
+                            parkingAreaSpot.push({parkingArea: pa, spot: spots})
+                            return parkingAreaSpot;
+                        }).then(pas => printParkingAreaCustomer(pas));
+                    }
+                }
+                else
+                    printParkingAreaAdmin(parkingArea);
             })
         })
     },
@@ -92,10 +109,19 @@ App = {
         var price = $("#priceOfParkingArea").val();
         var address = $("#addressOfParkingArea").val();
         var numberOfSpot = $("#numberOfSpot").val();
-        console.log(price,address,numberOfSpot)
         App.contracts.SmartParking.deployed().then(function(instance){
-            console.log(instance);
             return instance.addParkingArea(price,address,numberOfSpot,{from: App.account, gasPrice: 2000000000});
         });
+    },
+    updateParkingArea: function(id){
+        var price = $("#priceOfParkingArea").val();
+        var address = $("#addressOfParkingArea").val();
+        var numberOfSpot = $("#numberOfSpot").val();
+        App.contracts.SmartParking.deployed().then(function(instance){
+            return instance.updateParkingArea(id,price,address,numberOfSpot,{from: App.account, gasPrice: 2000000000});
+        });
+    },
+    reserveSpot: function(id){
+        
     }
 };
