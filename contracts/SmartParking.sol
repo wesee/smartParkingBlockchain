@@ -17,12 +17,9 @@ contract SmartParking is Migrations{
         string price;
         string addrs;
         uint16 spotCount;
-        int lastSpot;
+        int24 lastSpot;
         mapping(uint16 => Spot) spot;
     }
-
-    event spotTaken(uint16 id, string palte, address user);
-    event updateArea();
 
     function getParkingAreaCount() public view returns(uint){
         return parkingArea.length;
@@ -42,10 +39,9 @@ contract SmartParking is Migrations{
         parkingArea[id].price = _price;
         parkingArea[id].addrs = _addrs;
         parkingArea[id].spotCount = _spotCount;
-        emit updateArea();
     }
 
-    function isAvitable(uint8 idParkingArea, uint16 idSpot) public view returns (bool){
+    function isAvailable(uint8 idParkingArea, uint16 idSpot) public view returns (bool){
         require(idParkingArea<parkingArea.length);
         require(idSpot<parkingArea[idParkingArea].spotCount);
         if(now > parkingArea[idParkingArea].spot[idSpot].finish)
@@ -58,7 +54,7 @@ contract SmartParking is Migrations{
         require(idParkingArea<parkingArea.length);
         uint16 spotCount=0;
         for(uint16 i=0;i<parkingArea[idParkingArea].spotCount;i++)
-            if(isAvitable(idParkingArea,i))
+            if(isAvailable(idParkingArea,i))
                 spotCount++;
         return spotCount;
     }
@@ -72,15 +68,13 @@ contract SmartParking is Migrations{
     function reserveSpot(uint8 idParkingArea, uint16 idSpot, uint _start, uint _finish, string _plate) public{
         require(idParkingArea<parkingArea.length);
         require(idSpot<parkingArea[idParkingArea].spotCount);
-        require(idSpot<parkingArea[idParkingArea].spotCount);
-        require(isAvitable(idParkingArea,idSpot));
+        require(isAvailable(idParkingArea,idSpot));
         require(_start<_finish);
         parkingArea[idParkingArea].spot[idSpot].start = _start; 
         parkingArea[idParkingArea].spot[idSpot].finish = _finish; 
         parkingArea[idParkingArea].spot[idSpot].plate = _plate; 
         parkingArea[idParkingArea].lastSpot = idSpot;
         parkingArea[idParkingArea].spot[idSpot].customer = msg.sender;
-        emit spotTaken(idSpot,_plate,msg.sender);
     }
 
     function getParkingArea(uint8 index) public view returns (uint8, uint16, uint16, int,string,string){

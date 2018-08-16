@@ -13,7 +13,7 @@ App = {
             if(web3.currentProvider.isMetaMask === true){
                 App.web3Provider = web3.currentProvider;
                 web3 = new Web3(web3.currentProvider);
-                web3.currentProvider.publicConfigStore.on('update', App.render);
+                web3.currentProvider.publicConfigStore.on('update', App.reloadPage);
                 return App.initContract();
             }else{
                 console.log("metamask is not avitable")
@@ -27,28 +27,17 @@ App = {
         }
         return App.initContract();
     },
-    
     initContract: function() {
         $.getJSON("SmartParking.json", function(smartParking) {
             App.contracts.SmartParking = TruffleContract(smartParking);
             App.contracts.SmartParking.setProvider(App.web3Provider);
-            App.listenForEvents();
             return App.render();
         });
     },
-    listenForEvents: function() {
-        App.contracts.SmartParking.deployed().then(function(instance){
-            instance.spotTaken({},{
-                fromBlock: 0,
-                toBlock: 'latest'
-            }).watch((error,event) => App.getAllParkingArea());
-            instance.updateArea({},{
-                fromBlock: 0,
-                toBlock: 'latest'
-            }).watch((error,event) => App.getAllParkingArea())
-        });
+    reloadPage: function(){
+        window.location.href = "index.html"
+        App.render()
     },
-    
     render: function() {
         const loader = $("#loader");
         const page = $("#pageLoaded");
@@ -88,14 +77,10 @@ App = {
                 return allParkingArea;
             }).then(parkingArea =>{
                 if(!App.isAdmin){
-                    var parkingAreaSpot = [];
+                    let parkingAreaSpot = [];
                     for(let i = 0; i < parkingArea.length;i++){
                         parkingArea[i].then((pa)=>{
-                            let spots = [];
-                            for(let i = 0; i < pa[1]; i++)
-                                if(instance.isAvitable(pa[0],i))
-                                    spots.push(i);
-                            parkingAreaSpot.push({parkingArea: pa, spot: spots})
+                            parkingAreaSpot.push(pa);
                             return parkingAreaSpot;
                         }).then(pas => printParkingAreaCustomer(pas));
                     }
@@ -105,12 +90,24 @@ App = {
             })
         })
     },
-    createNewParkingArea: function(){
-        var price = $("#priceOfParkingArea").val();
-        var address = $("#addressOfParkingArea").val();
-        var numberOfSpot = $("#numberOfSpot").val();
+    getAllSpot: function(id){
         App.contracts.SmartParking.deployed().then(function(instance){
-            return instance.addParkingArea(price,address,numberOfSpot,{from: App.account, gasPrice: 2000000000});
+            instance.getParkingArea(id).then(pa => {
+                console.log(pa)
+               for(let i=0; i < pa[1].toNumber(); i++)
+                instance.isAvailable(id,i).then(available => {
+                    if(available)
+                        addSpot(i);
+                }
+            })
+        })
+    },
+    createNewParkingArea: function(){
+        const price = $("#priceOfParkingArea").val();
+        const address = $("#addressOfParkingArea").val();
+        const numberOfSpot = $("#numberOfSpot").val();
+        App.contracts.SmartParking.deployed().then(function(instance){
+            instance.addParkingArea(price,address,numberOfSpot,{from: App.account, gasPrice: 2000000000});
         });
     },
     updateParkingArea: function(id){
@@ -121,7 +118,13 @@ App = {
             return instance.updateParkingArea(id,price,address,numberOfSpot,{from: App.account, gasPrice: 2000000000});
         });
     },
-    reserveSpot: function(id){
-        
+    reserveSpot: function(idArea){
+        const plate = $("#plate").val();
+        const start = moment($('#startTime').val(), "D/M/YYYY H:mm").unix() 
+        const finish = moment($('#finishTime').val(), "D/M/YYYY H:mm").unix() 
+        const spot = $("#spotSelect").val();
+        App.contracts.SmartParking.deployed().then(function(instance){
+            instance.reserveSpot(idArea,spot,start,finish,plate,{from: App.account, gasPrice: 2000000000});
+        })
     }
 };
