@@ -16,7 +16,7 @@ App = {
                 web3.currentProvider.publicConfigStore.on('update', App.reloadPage);
                 return App.initContract();
             }else{
-                console.log("metamask is not avitable")
+                console.log("metamask is not available")
             }
         }else{
             const loader = $("#loader");
@@ -35,8 +35,12 @@ App = {
         });
     },
     reloadPage: function(){
-        window.location.href = "index.html"
-        App.render()
+        web3.eth.getCoinbase(function(err,account){
+            if(account != App.account){
+                window.location.href = "index.html"
+                App.render()
+            }
+        })
     },
     render: function() {
         const loader = $("#loader");
@@ -76,29 +80,18 @@ App = {
                 }
                 return allParkingArea;
             }).then(parkingArea =>{
-                if(!App.isAdmin){
-                    let parkingAreaSpot = [];
-                    for(let i = 0; i < parkingArea.length;i++){
-                        parkingArea[i].then((pa)=>{
-                            parkingAreaSpot.push(pa);
-                            return parkingAreaSpot;
-                        }).then(pas => printParkingAreaCustomer(pas));
-                    }
-                }
-                else
-                    printParkingAreaAdmin(parkingArea);
+                    printParkingArea(parkingArea);
             })
         })
     },
-    getAllSpot: function(id){
+    getSpots: function(id){
         App.contracts.SmartParking.deployed().then(function(instance){
             instance.getParkingArea(id).then(pa => {
-                console.log(pa)
                for(let i=0; i < pa[1].toNumber(); i++)
                 instance.isAvailable(id,i).then(available => {
                     if(available)
                         addSpot(i);
-                }
+                })
             })
         })
     },
@@ -125,6 +118,28 @@ App = {
         const spot = $("#spotSelect").val();
         App.contracts.SmartParking.deployed().then(function(instance){
             instance.reserveSpot(idArea,spot,start,finish,plate,{from: App.account, gasPrice: 2000000000});
+        })
+    },
+    getAllReservation: function(){
+        App.contracts.SmartParking.deployed().then(function(instance){
+            instance.getParkingAreaCount().then(count =>{
+                for(let i=0;i<count.toNumber();i++){
+                    instance.getParkingArea(i).then(pa => {
+                        for(let j = 0; j < pa[1]; j++)
+                            instance.isReservedToMe(i,j).then(reservation => {
+                                if(reservation)
+                                    addSpot(instance.getReservation(i,j));
+                            })
+                    })
+                }
+
+            })
+        })
+    },
+    paySpot: function(idParkingArea, idSpot, value){
+        console.log(value)
+        App.contracts.SmartParking.deployed().then(function(instance){
+            instance.paySpot(idParkingArea,idSpot,{from: App.account, gasPrice: 2000000000,value: Math.round(value)});
         })
     }
 };
