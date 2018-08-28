@@ -1,150 +1,48 @@
-﻿<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Smart Parking</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
-    <link href="plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="plugins/node-waves/waves.css" rel="stylesheet" />
-    <link href="plugins/animate-css/animate.css" rel="stylesheet" />
-    <link href="plugins/morrisjs/morris.css" rel="stylesheet" />
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/themes/all-themes.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-</head>
-
-<body class="theme-red">
-    <div class="page-loader-wrapper-mio" id="loader">
-        <div class="loader" >
-            <div class="preloader">
-                <div class="spinner-layer pl-red">
-                    <div class="circle-clipper left">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="circle-clipper right">
-                        <div class="circle"></div>
-                    </div>
-                </div>
+﻿<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Parcheggi Prenotati
+                </h2>
+                <ul class="header-dropdown m-r--5">
+                    <li>
+                        <a onclick="/*$('#table').waitMe({});*/printSpot();" data-toggle="cardloading" data-loading-effect="pulse">
+                            <i class="material-icons">loop</i>
+                        </a>
+                    </li>
+                </ul>
             </div>
-            <div id="errorType"></div>
+            <div class="body table-responsive">
+                <table  id="attachTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID PARCHEGGIO</th>
+                            <th>ID POSTO</th>
+                            <th>INDIRIZZO</th>
+                            <th>COSTO ORARIO</th>
+                            <th>DATA INIZIO PRENOTAZIONE</th>
+                            <th>DATA FINE PRENOTAZIONE</th>
+                            <th>PREZZO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contenutoTabella">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    <div id="pageLoaded">
-        <nav class="navbar">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a href="javascript:void(0);" class="bars"></a>
-                    <a class="navbar-brand" href="index.html">Smart Parking - Italdata</a>
-                </div>
-            </div>
-        </nav>
-        <section>
-            <aside id="leftsidebar" class="sidebar">
-                <!-- User Info -->
-                <div class="user-info">
-                    <div class="image">
-                        <img id="imageUserIdenticon" width="64" height="64" alt="User" />
-                    </div>
-                    <div class="info-container">
-                        <div class="name" id="WalletAddress"></div>
-                    </div>
-                </div>
-                <!-- #User Info -->
-                <!-- Menu -->
-                <div class="menu">
-                    <ul class="list">
-                        <li class="header">MAIN NAVIGATION</li>
-                        <li>
-                            <a>
-                                <i class="material-icons">home</i>
-                                <span>Home</span>
-                            </a>
-                        </li>
-                        <li id="sectionParking">
-                            <a href="javascript:void(0);" class="menu-toggle">
-                                <i class="material-icons">directions_car</i>
-                                <span>Lista Parcheggi</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- #Menu -->
-            </aside>
-            <!-- #END# Left Sidebar -->
-        </section>
-
-        <section class="content">
-            <div class="container-fluid">
-                <div id="contenuto">
-                        <div class="row clearfix">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="card">
-                                        <div class="header">
-                                            <h2>
-                                                Parcheggi Prenotati
-                                            </h2>
-                                        </div>
-                                        <div class="body table-responsive">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>ID PARCHEGGIO</th>
-                                                        <th>ID POSTO</th>
-                                                        <th>INDIRIZZO</th>
-                                                        <th>COSTO ORARIO</th>
-                                                        <th>DATA INIZIO PRENOTAZIONE</th>
-                                                        <th>DATA FINE PRENOTAZIONE</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="contenutoTabella">
-                                                </tbody>
-                                            </table>
-                                            <div style="display:flex; flex-direction: row-reverse">
-                                                <button type="button" onclick="printSpot()" id="refresh" class="btn bg-red waves-effect">Refresh</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                </div>
-            </div>
-        </section>
-    </div>
-    <script src="http://momentjs.com/downloads/moment-with-locales.js"></script>
-    <script src="http://momentjs.com/downloads/moment.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="plugins/jquery/jquery.min.js"></script>
-    <script src="plugins/bootstrap/js/bootstrap.js"></script>
-    <script src="plugins/bootstrap-select/js/bootstrap-select.js"></script>
-    <script src="plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
-    <script src="plugins/node-waves/waves.js"></script>
-    <script src="plugins/jquery-countto/jquery.countTo.js"></script>
-    <script src="plugins/raphael/raphael.min.js"></script>
-    <script src="plugins/morrisjs/morris.js"></script>
-    <script src="plugins/chartjs/Chart.bundle.js"></script>
-    <script src="plugins/flot-charts/jquery.flot.js"></script>
-    <script src="plugins/flot-charts/jquery.flot.resize.js"></script>
-    <script src="plugins/flot-charts/jquery.flot.pie.js"></script>
-    <script src="plugins/flot-charts/jquery.flot.categories.js"></script>
-    <script src="plugins/flot-charts/jquery.flot.time.js"></script>
-    <script src="plugins/jquery-sparkline/jquery.sparkline.js"></script>
-    <script src="js/admin.js"></script>
-    <script src="js/pages/index.js"></script>
-    <script src="js/demo.js"></script>
-    <script src="js/web3.min.js"></script>
-    <script src="js/truffle-contract.js"></script>
-    <script src="js/reservedSpot.js"></script>
-    <script src="js/accountDom.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/pnglib.js"></script>
-    <script src="js/identicon.js"></script>
-    <script> window.onload = App.init();</script>
-    <script>setTimeout(function () {document.getElementById("refresh").click();}, 1000);</script>
-</body>
-
-</html>
+</div>
+<script src="js/dom/viewParkingAreaCustomerDom.js"></script>
+<script>printSpot()</script>
+<script>$('#attachTable').DataTable({
+        "aoColumns": [
+            { "bSearchable": false },
+            { "bSearchable": false },
+            { "bSearchable": true },
+            { "bSearchable": false },
+            { "bSearchable": false },
+            { "bSearchable": false },
+            { "bSearchable": false }
+        ]
+    });</script>

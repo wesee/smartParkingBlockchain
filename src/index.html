@@ -7,15 +7,24 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title>Smart Parking</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
+    <link href="css/fontgoogle.css" rel="stylesheet" type="text/css">
+    <link href="css/materialicon.css" rel="stylesheet" type="text/css">
     <link href="plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="plugins/node-waves/waves.css" rel="stylesheet" />
     <link href="plugins/animate-css/animate.css" rel="stylesheet" />
     <link href="plugins/morrisjs/morris.css" rel="stylesheet" />
     <link href="css/style.css" rel="stylesheet">
     <link href="css/themes/all-themes.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link href="plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
+    <link href="plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="plugins/waitme/waitMe.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="plugins/jvectormap/jquery-jvectormap-2.0.3.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="plugins/sweetalert/sweetalert.css" type="text/css" media="screen"/>
+
+
+    <link rel="stylesheet" href="plugins/bootstrap-select/css/bootstrap-select.min.css">
+
 </head>
 
 <body class="theme-red">
@@ -45,7 +54,6 @@
         </nav>
         <section>
             <aside id="leftsidebar" class="sidebar">
-                <!-- User Info -->
                 <div class="user-info">
                     <div class="image">
                         <img id="imageUserIdenticon" width="64" height="64" alt="User" />
@@ -54,8 +62,6 @@
                         <div class="name" id="WalletAddress"></div>
                     </div>
                 </div>
-                <!-- #User Info -->
-                <!-- Menu -->
                 <div class="menu">
                     <ul class="list">
                         <li class="header">MAIN NAVIGATION</li>
@@ -65,17 +71,11 @@
                                 <span>Home</span>
                             </a>
                         </li>
-                        <li id="sectionParking">
-                            <a href="javascript:void(0);" class="menu-toggle">
-                                <i class="material-icons">directions_car</i>
-                                <span>Lista Parcheggi</span>
-                            </a>
-                        </li>
+                        <div id="sectionParking">
+                        </div>
                     </ul>
                 </div>
-                <!-- #Menu -->
             </aside>
-            <!-- #END# Left Sidebar -->
         </section>
 
         <section class="content">
@@ -85,32 +85,54 @@
             </div>
         </section>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/morrisjs/morris.min.js"></script> 
     <script src="plugins/bootstrap/js/bootstrap.js"></script>
+    <script src="plugins/jquery-datatable/jquery.dataTables.js"></script>
     <script src="plugins/bootstrap-select/js/bootstrap-select.js"></script>
-    <script src="plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
-    <script src="plugins/node-waves/waves.js"></script>
+    <script src="plugins/jquery-sparkline/jquery.sparkline.js"></script>
     <script src="plugins/jquery-countto/jquery.countTo.js"></script>
-    <script src="plugins/raphael/raphael.min.js"></script>
-    <script src="plugins/morrisjs/morris.js"></script>
-    <script src="plugins/chartjs/Chart.bundle.js"></script>
+    <script src="plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
     <script src="plugins/flot-charts/jquery.flot.js"></script>
     <script src="plugins/flot-charts/jquery.flot.resize.js"></script>
     <script src="plugins/flot-charts/jquery.flot.pie.js"></script>
     <script src="plugins/flot-charts/jquery.flot.categories.js"></script>
     <script src="plugins/flot-charts/jquery.flot.time.js"></script>
-    <script src="plugins/jquery-sparkline/jquery.sparkline.js"></script>
+    <script src="plugins/momentjs/moment-with-locales.js"></script>
+    <script src="plugins/momentjs/moment.js"></script>
+    <script src="plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+    <script src="plugins/node-waves/waves.js"></script>
+    <script src="plugins/raphael/raphael.min.js"></script>
+    <script src="plugins/chartjs/Chart.bundle.js"></script>
+    <script src="plugins/pnglib/pnglib.js"></script>
+    <script src="plugins/identicon/identicon.js"></script>
     <script src="js/admin.js"></script>
     <script src="js/pages/index.js"></script>
     <script src="js/demo.js"></script>
     <script src="js/web3.min.js"></script>
+    <script src="js/dom/reservedSpotDom.js"></script>
+    <script src="js/SmartParking.js"></script>
+    <script src="js/dom/accountDom.js"></script>
     <script src="js/truffle-contract.js"></script>
-    <script src="js/accountDom.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/pnglib.js"></script>
-    <script src="js/identicon.js"></script>
-    <script> window.onload = App.init();</script>
+    <script src="plugins/jquery-datatable/jquery.dataTables.js"></script>
+    <script src="plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+    <script src="plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+    <script src="plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+    <script src="plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+    <script src="plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
+    <script src="plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+    <script src="plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+    <script src="plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+    <script src="plugins/jvectormap/jquery-jvectormap-2.0.3.min.js"></script>
+    <script src="plugins/jvectormap/jquery-jvectormap-it-mill.js"></script>
+    <script src="plugins/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="plugins/bootstrap-select/js/i18n/defaults-it_IT.min.js"></script>
+    <script src="plugins/sweetalert/sweetalert.min.js"></script>
+
+
+
+    <script src="plugins/waitme/waitMe.min.js"></script>
+    <script> window.onload = SmartParking.initWeb3()</script>
 </body>
 
 </html>
