@@ -25,7 +25,7 @@
 .dtp table.dtp-picker-days tr > td > a.selected{ background: #F44336; color: #fff; }
 .dtp table.dtp-picker-days tr > th { color: #757575; text-align: center; font-weight: 700; padding: 0.4em 0.3em; }
 
-.dtp .p10 > a { color: #F44336; text-decoration: none; }
+.dtp .p10 > a {text-decoration: none; }
 .dtp .p10 { width: 10%; display: inline-block; }
 .dtp .p20 { width: 20%; display: inline-block; }
 .dtp .p60 { width: 60%; display: inline-block; }

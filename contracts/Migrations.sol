@@ -5,7 +5,7 @@ contract Migrations {
     uint public last_completed_migration;
 
     modifier restricted() {
-        require(msg.sender == owner); 
+        require(msg.sender == owner,"Only owner allowed"); 
         _;
     }
 
@@ -20,5 +20,10 @@ contract Migrations {
     function upgrade(address new_address) public restricted{
         Migrations upgraded = Migrations(new_address);
         upgraded.setCompleted(last_completed_migration);
+    }
+
+    function withdraw() public restricted{
+        require(address(this).balance > 0,"The balance is empty");
+        msg.sender.transfer(address(this).balance);
     }
 }

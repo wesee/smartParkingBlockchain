@@ -1,25 +1,23 @@
 function printParkingArea() {
     const parkingAreaPromise = SmartParking.getAllParkingArea()
-    const noSpot = $("#noSpot");
-    noSpot.empty();
-    parkingAreaPromise.then(allParkingArea => {
-        if (allParkingArea.length == 0) {
-            parkingAreaHtml = '<div class="block-header"><h2>Non sono disponibili parcheggi</h2></div>'
-            $("#noSpot").html(parkingAreaHtml);
-        }
-        else
-            Promise.all(allParkingArea).then(parkingArea => {
-                const table = $('#attachTable').DataTable();
-                table.clear();
-                for (let i = 0; i < parkingArea.length; i++)
-                    table.row.add([parkingArea[i][0], parkingArea[i][5], parkingArea[i][4], (parkingArea[i][2] == 0 ? "Nessun parcheggio occupato" : parkingArea[i][2])]).draw(false);
 
-                $('#attachTable tbody').on('click', 'tr', function () {
-                    if ($('#attachTable').DataTable().row(this).data()[3] > 0)
-                        reserveSpot($('#attachTable').DataTable().row(this).data()[0]);
-                });
-                $("#attachTable > tbody").css("cursor", "pointer")
-            })
+    parkingAreaPromise.then(allParkingArea => {
+        Promise.all(allParkingArea).then(parkingArea => {
+            const table = $('#attachTable').DataTable();
+            table.clear();
+            const exchange = new EtherExchange();
+            for (let i = 0; i < parkingArea.length; i++) {
+                exchange.etherToEuro(web3.fromWei(parkingArea[i][4],"ether")).then(euro => {
+                    let rounded = euro.toFixed(2);
+                    table.row.add([parkingArea[i][0], parkingArea[i][5], rounded, (parkingArea[i][2] == 0 ? "Nessun parcheggio disponibile" : parkingArea[i][2])]).draw(false);
+                })
+            }
+            $('#attachTable tbody').on('click', 'tr', function () {
+                if ($('#attachTable').DataTable().row(this).data()[3] > 0)
+                    reserveSpot($('#attachTable').DataTable().row(this).data()[0]);
+            });
+            $("#attachTable > tbody").css("cursor", "pointer")
+        })
     })
 }
 
@@ -28,7 +26,12 @@ function reserveSpot(id) {
     $("#reserveSpot").load(`reserveSpotForm.html`, () => {
         $("#titleReservation").replaceWith('<h2 id="titleReservation">INSERIRE DATI PER PRENOTARE POSTO AL PARCHEGGIO ' + id + '</h2>');
         $("#buttonReservation").replaceWith('<button onclick="reserveSelectSpot(' + id + ')" class="btn bg-red waves-effect" type="button">Prenota</button>')
-        $('#startTime').bootstrapMaterialDatePicker({ format: 'DD/MM/YYYY HH:mm', minDate: new Date() });
+        $('#startTime').bootstrapMaterialDatePicker({
+            format: 'DD/MM/YYYY HH:mm', 
+            minDate: new Date(), 
+            clearButton: true, 
+            weekStart: 1
+        });
         $("#finishTime").prop('disabled', true);
 
         SmartParking.getSpots(id).then(spotPromise => {
@@ -46,6 +49,14 @@ function reserveSpot(id) {
 }
 
 function reserveSelectSpot(id) {
+    const plate = $("#plate").val();
+    const start = moment($('#startTime').val(), "D/M/YYYY H:mm").unix()
+    const finish = moment($('#finishTime').val(), "D/M/YYYY H:mm").unix()
+    const spot = $("#spotSelect").val();
+    reserveSelectSpotConfirm(id, plate, start, finish, spot)
+}
+
+function reserveSelectSpotConfirm(id, plate, start, finish, spot) {
     swal({
         title: "Sei sicuro?",
         text: "Vuoi confermare la tua prenotazione",
@@ -59,7 +70,7 @@ function reserveSelectSpot(id) {
     }, function (isConfirm) {
         if (isConfirm) {
             swal("Prenotato!", "La tua prenotazione è andata a buon fine.", "success");
-            SmartParking.reserveSpot(id);
+            SmartParking.reserveSpot(id, plate, start, finish, spot);
         } else {
             swal("Cancellata", "La prenotazione non è stata confermata", "error");
         }

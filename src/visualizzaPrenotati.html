@@ -7,7 +7,7 @@
                 </h2>
                 <ul class="header-dropdown m-r--5">
                     <li>
-                        <a onclick="/*$('#table').waitMe({});*/printSpot();" data-toggle="cardloading" data-loading-effect="pulse">
+                        <a style="cursor: pointer;" onclick="printReservedSpot();" data-toggle="cardloading" data-loading-effect="pulse">
                             <i class="material-icons">loop</i>
                         </a>
                     </li>
@@ -34,7 +34,7 @@
     </div>
 </div>
 <script src="js/dom/viewParkingAreaCustomerDom.js"></script>
-<script>printSpot()</script>
+<script>printReservedSpot()</script>
 <script>$('#attachTable').DataTable({
         "aoColumns": [
             { "bSearchable": false },
