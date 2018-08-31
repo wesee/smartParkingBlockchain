@@ -4,6 +4,7 @@ function printReservedSpot() {
         const table = $('#attachTable').DataTable();
         table.clear();
         const convert = new EtherExchange();
+        let promiseExchange = [];
         Promise.all(reservedPromise).then(reservedArray => {
             for (let i = 0; i < reservedArray.length; i++) {
                 Promise.all(reservedArray[i]).then(spots => {
@@ -14,16 +15,29 @@ function printReservedSpot() {
                         s = spots[i];
                         let timestampDiff = s[5] - s[4];
                         let hours = timestampDiff / 3600;
-                        convert.etherToEuro(web3.fromWei(s[3], "ether")).then(euro => {
-                            let rounded = euro.toFixed(2);
-                            table.row.add([s[0], s[1], s[2], rounded, moment.unix(s[4]).format('DD/MM/YYYY HH:mm'), moment.unix(s[5]).format('DD/MM/YYYY HH:mm'), (hours * rounded).toFixed(2)]).draw(false);
-                        })
+                        promiseExchange.push(new Promise((res, rej) => {
+                            convert.etherToEuro(web3.fromWei(s[3], 'ether')).then(euro => {
+                                res(euro.toFixed(2))
+                            })
+                        }))
+                        table.row.add([s[0], s[1], s[2], s[3], moment.unix(s[4]).format('DD/MM/YYYY HH:mm'), moment.unix(s[5]).format('DD/MM/YYYY HH:mm'), (hours * s[3])]).draw(false);
                         $('#attachTable tbody').on('click', 'tr', reserveClosures);
                         function reserveClosures() {
-                            const spot = $('#attachTable').DataTable().row(this).data();
-                            PaySelectSpot(spot[0], spot[1], web3.fromWei(s[3], "ether") * hours);
+                            PaySelectSpot(spot[0], spot[1]);
                         }
                     }
+
+                }).then(() => {
+                    Promise.all(promiseExchange).then(euro => {
+                        for (let i = 0; i < table.row().count(); i++) {
+                            let data = table.row(i).data();
+                            data[3] = euro;
+                            let timestampDiff = moment(data[5], "D/M/YYYY H:mm").unix() - moment(data[4], "D/M/YYYY H:mm").unix();
+                            let hours = timestampDiff / 3600;
+                            data[6] = euro * hours;
+                            table.row(i).data(data).draw(false);
+                        }
+                    })
                 })
             }
         })
@@ -32,7 +46,7 @@ function printReservedSpot() {
 
 }
 
-function PaySelectSpot(parkingAreaId, spotId, price) {
+function PaySelectSpot(parkingAreaId, spotId) {
     swal({
         title: "Sei sicuro?",
         text: "Vuoi confermare il pagamento",
@@ -46,7 +60,7 @@ function PaySelectSpot(parkingAreaId, spotId, price) {
     }, function (isConfirm) {
         if (isConfirm) {
             swal("Pagato!", "Il pagamento è andato a buon fine.", "success");
-            SmartParking.paySpot(parkingAreaId, spotId, price);
+            SmartParking.paySpot(parkingAreaId, spotId);
         } else {
             swal("Cancellata", "il pagamento è stato cancellato", "error");
         }

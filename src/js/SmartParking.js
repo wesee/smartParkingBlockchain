@@ -71,40 +71,40 @@ SmartParking = {
                 var allParkingArea = [];
                 instance.getParkingAreaCount().then(count => {
                     for (let i = 0; i < count.toNumber(); i++) {
-                        allParkingArea.push(instance.getParkingArea(i));
+                        allParkingArea.push(instance.getParkingArea(i, moment(new Date(), "D/M/YYYY H:mm").unix()));
                     }
                     res(allParkingArea);
                 })
-            }).catch((err)=> console.log(err))
+            }).catch((err) => console.log(err))
         })
     },
     getSpots: function (id) {
         return new Promise((res, rej) => {
             SmartParking.contracts.SmartParking.deployed().then(function (instance) {
-                instance.getParkingArea(id).then(pa => {
+                instance.getParkingArea(id, moment(new Date(), "D/M/YYYY H:mm").unix()).then(pa => {
                     let spotsId = [];
                     for (let i = 0; i < pa[1].toNumber(); i++)
-                        spotsId.push(instance.isAvailable(id, i));
+                        spotsId.push(instance.isAvailable(id, i, moment(new Date(), "D/M/YYYY H:mm").unix()));
 
                     res(spotsId)
                 })
-            }).catch((err)=> console.log(err))
+            }).catch((err) => console.log(err))
         })
     },
     createNewParkingArea: function (price, address, numberOfSpot) {
         SmartParking.contracts.SmartParking.deployed().then(function (instance) {
             instance.addParkingArea(price, address, numberOfSpot, { from: SmartParking.account, gasPrice: 2000000000 });
-        }).catch((err)=> console.log(err));
+        }).catch((err) => console.log(err));
     },
     updateParkingArea: function (id, price, address, numberOfSpot) {
         SmartParking.contracts.SmartParking.deployed().then(function (instance) {
             instance.updateParkingArea(id, price, address, numberOfSpot, { from: SmartParking.account, gasPrice: 2000000000 });
-        }).catch((err)=> console.log(err));
+        }).catch((err) => console.log(err));
     },
     reserveSpot: function (idArea, plate, start, finish, spot) {
         SmartParking.contracts.SmartParking.deployed().then(function (instance) {
-            instance.reserveSpot(idArea, spot, start, finish, plate, { from: SmartParking.account, gasPrice: 2000000000 });
-        }).catch((err)=> console.log(err))
+            instance.reserveSpot(idArea, spot, start, moment(new Date(), "D/M/YYYY H:mm").unix(), finish, plate, { from: SmartParking.account, gasPrice: 2000000000 });
+        }).catch((err) => console.log(err))
     },
     getAllReservation: function () {
         return new Promise((res, rej) => {
@@ -113,13 +113,13 @@ SmartParking = {
                     let allParkingArea = [];
                     for (let i = 0; i < count.toNumber(); i++) {
                         allParkingArea.push(new Promise((res, rej) => {
-                            instance.getParkingArea(i).then(pa => {
+                            instance.getParkingArea(i, moment(new Date(), "D/M/YYYY H:mm").unix()).then(pa => {
                                 let spotPromise = []
                                 for (let j = 0; j < pa[1]; j++) {
                                     spotPromise.push(new Promise((res, rej) => {
-                                        instance.isReservedToMe(i, j).then(isReserved => {
+                                        instance.needToPay(i, j, moment(new Date(), "D/M/YYYY H:mm").unix()).then(isReserved => {
                                             if (isReserved)
-                                                res(instance.getReservation(i, j));
+                                                res(instance.getReservation(i, j, moment(new Date(), "D/M/YYYY H:mm").unix()));
                                             else
                                                 res([])
                                         })
@@ -132,15 +132,26 @@ SmartParking = {
                     res(allParkingArea);
                 })
 
-            }).catch((err)=> console.log(err))
+            }).catch((err) => console.log(err))
         })
     },
-    paySpot: function (idParkingArea, idSpot, value) {
-        console.log(value)
+    getReceipt: function (idParkingArea, idSpot) {
+        return new Promise((res, rej) => {
+            SmartParking.contracts.SmartParking.deployed().then(function (instance) {
+                instance.getReceipt(idParkingArea, idSpot, moment(new Date(), "D/M/YYYY H:mm").unix()).then(cost => {
+                    res(cost.toNumber())
+                })
+            })
+        })
+    },
+    paySpot: function (idParkingArea, idSpot) {
         SmartParking.contracts.SmartParking.deployed().then(function (instance) {
-            instance.paySpot(idParkingArea, idSpot, {
-                from: SmartParking.account, gasPrice: 2000000000, value: web3.toWei(value, "ether")
-            }).catch((err)=> console.log(err));
+            const pricePromise = SmartParking.getReceipt(idParkingArea, idSpot);
+            pricePromise.then(price => {
+                instance.paySpot(idParkingArea, idSpot, moment(new Date(), "D/M/YYYY H:mm").unix(), {
+                    from: SmartParking.account, gasPrice: 2000000000, value: price
+                }).catch((err) => console.log(err));
+            })
         })
     }
 };
