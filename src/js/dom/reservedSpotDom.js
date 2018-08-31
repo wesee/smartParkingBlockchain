@@ -1,4 +1,3 @@
-
 function printReservedSpot() {
     SmartParking.getAllReservation().then(reservedPromise => {
         const table = $('#attachTable').DataTable();
@@ -6,8 +5,9 @@ function printReservedSpot() {
         const convert = new EtherExchange();
         let promiseExchange = [];
         Promise.all(reservedPromise).then(reservedArray => {
+            let euroPromise = [];
             for (let i = 0; i < reservedArray.length; i++) {
-                Promise.all(reservedArray[i]).then(spots => {
+                euroPromise.push(Promise.all(reservedArray[i]).then(spots => {
                     spots = spots.filter(function (element) {
                         return element.length != 0;
                     });
@@ -23,27 +23,28 @@ function printReservedSpot() {
                         table.row.add([s[0], s[1], s[2], s[3], moment.unix(s[4]).format('DD/MM/YYYY HH:mm'), moment.unix(s[5]).format('DD/MM/YYYY HH:mm'), (hours * s[3])]).draw(false);
                         $('#attachTable tbody').on('click', 'tr', reserveClosures);
                         function reserveClosures() {
-                            PaySelectSpot(spot[0], spot[1]);
+                            const spot = $('#attachTable').DataTable().row(this).data();
+                            PaySelectSpot(spot[0], spot[1], web3.fromWei(s[3], "ether") * hours);
                         }
                     }
-
-                }).then(() => {
-                    Promise.all(promiseExchange).then(euro => {
-                        for (let i = 0; i < table.row().count(); i++) {
-                            let data = table.row(i).data();
-                            data[3] = euro;
-                            let timestampDiff = moment(data[5], "D/M/YYYY H:mm").unix() - moment(data[4], "D/M/YYYY H:mm").unix();
-                            let hours = timestampDiff / 3600;
-                            data[6] = euro * hours;
-                            table.row(i).data(data).draw(false);
-                        }
-                    })
-                })
+                    return promiseExchange;
+                }))
             }
+            euroPromise[euroPromise.length - 1].then(euroArray => {
+                Promise.all(euroArray).then(euro => {
+                    for (let i = 0; i < euro.length; i++) {
+                        let data = table.row(i).data();
+                        data[3] = euro[i];
+                        let timestampDiff = moment(data[5], "D/M/YYYY H:mm").unix() - moment(data[4], "D/M/YYYY H:mm").unix();
+                        let hours = timestampDiff / 3600;
+                        data[6] = (euro[i] * hours).toFixed(2);
+                        table.row(i).data(data).draw(false);
+                    }
+                })
+            })
         })
     })
     $("#attachTable > tbody").css("cursor", "pointer")
-
 }
 
 function PaySelectSpot(parkingAreaId, spotId) {

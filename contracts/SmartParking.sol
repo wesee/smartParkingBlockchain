@@ -7,6 +7,7 @@ contract SmartParking is Migrations{
     struct Spot{
         uint16 id;
         uint start;
+        uint creation;
         uint finish;
         address customer;
         string plate;
@@ -38,6 +39,13 @@ contract SmartParking is Migrations{
         return (parkingArea[idParkingArea].spot[idSpot].customer == msg.sender);
     }
 
+    function isAvailable(uint8 idParkingArea, uint16 idSpot, uint _now) public view returns (bool){
+        require(idParkingArea<parkingArea.length,"Parking Area out of bound");
+        require(idSpot<parkingArea[idParkingArea].spotCount,"Spot out of bound");
+        return (_now > parkingArea[idParkingArea].spot[idSpot].finish ||
+                ((!isPaid(idParkingArea, idSpot)) && (_now > (parkingArea[idParkingArea].spot[idSpot].creation+(15*60))))
+        );
+    }
 
     function needToPay(uint8 idParkingArea, uint16 idSpot, uint _now) public view returns (bool){
         require(idParkingArea<getParkingAreaCount(),"Parking Area out of bound");
@@ -45,14 +53,12 @@ contract SmartParking is Migrations{
         return (
             parkingArea[idParkingArea].spot[idSpot].customer == msg.sender &&
             !parkingArea[idParkingArea].spot[idSpot].paid &&
-            _now < (parkingArea[idParkingArea].spot[idSpot].start+(15*60)) &&
+            _now < (parkingArea[idParkingArea].spot[idSpot].creation+(15*60)) &&
             _now < parkingArea[idParkingArea].spot[idSpot].finish
             );
     }
 
     function getReservation(uint8 idParkingArea, uint16 idSpot,uint _now) public view returns (uint8, uint16, string, uint, uint, uint){
-        require(idParkingArea<parkingArea.length,"Parking Area out of bound");
-        require(idSpot<parkingArea[idParkingArea].spotCount,"Spot out of bound");
         require(needToPay(idParkingArea,idSpot,_now),"different customers address in the spot");
         return (
                 parkingArea[idParkingArea].id, 
@@ -64,8 +70,6 @@ contract SmartParking is Migrations{
             );
     }
     function getSpotPaid(uint8 idParkingArea, uint16 idSpot) public view returns (uint8, uint16, string, uint, uint, uint, string){
-        require(idParkingArea<parkingArea.length,"Parking Area out of bound");
-        require(idSpot<parkingArea[idParkingArea].spotCount,"Spot out of bound");
         require(isPaid(idParkingArea,idSpot),"This spot is unpaied");
         require(isReservedToMe(idParkingArea,idSpot),"different customers address in the spot");
         return(
@@ -95,14 +99,6 @@ contract SmartParking is Migrations{
         parkingArea[id].spotCount = _spotCount;
     }
 
-    function isAvailable(uint8 idParkingArea, uint16 idSpot, uint _now) public view returns (bool){
-        require(idParkingArea<parkingArea.length,"Parking Area out of bound");
-        require(idSpot<parkingArea[idParkingArea].spotCount,"Spot out of bound");
-        return (_now > parkingArea[idParkingArea].spot[idSpot].finish ||
-                ((!isPaid(idParkingArea, idSpot)) && (_now > (parkingArea[idParkingArea].spot[idSpot].start+(15*60))))
-        );
-    }
-
     function getSpotsAvitable(uint8 idParkingArea, uint _now) public view returns (uint16){
         require(idParkingArea<parkingArea.length,"Parking Area out of bound");
         uint16 spotCount = 0;
@@ -125,11 +121,10 @@ contract SmartParking is Migrations{
     }
 
     function reserveSpot(uint8 idParkingArea, uint16 idSpot, uint _start, uint _now,uint _finish, string _plate) public{
-        require(idParkingArea<parkingArea.length,"Parking Area out of bound");
-        require(idSpot<parkingArea[idParkingArea].spotCount,"Spot out of bound");
         require(isAvailable(idParkingArea,idSpot,_now),"Spot not available");
         require(_start<_finish,"Start time greater than finish time");
-        parkingArea[idParkingArea].spot[idSpot].start = _start; 
+        parkingArea[idParkingArea].spot[idSpot].start = _start;
+        parkingArea[idParkingArea].spot[idSpot].creation = _now; 
         parkingArea[idParkingArea].spot[idSpot].id = idSpot;
         parkingArea[idParkingArea].spot[idSpot].finish = _finish; 
         parkingArea[idParkingArea].spot[idSpot].plate = _plate; 
@@ -160,9 +155,9 @@ contract SmartParking is Migrations{
         return (hour*(parkingArea[idParkingArea].price));
     }
     function paySpot(uint8 idParkingArea, uint16 idSpot, uint _now) public payable{
+        require(needToPay(idParkingArea,idSpot,_now),"Spot payment error");
         uint8 hour = uint8((((parkingArea[idParkingArea].spot[idSpot].finish-parkingArea[idParkingArea].spot[idSpot].start))/60/60));
         require((hour*(parkingArea[idParkingArea].price)) == msg.value,"The amount send is incorrect");
-        require(needToPay(idParkingArea,idSpot,_now),"Spot payment error");
         parkingArea[idParkingArea].spot[idSpot].paid = true;
         owner.transfer(msg.value);
     }
