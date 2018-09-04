@@ -4,8 +4,11 @@ function printParkingArea() {
         Promise.all(allParkingArea).then(parkingArea => {
             const table = $('#attachTable').DataTable();
             table.clear();
-            for (let i = 0; i < parkingArea.length; i++)
-                table.row.add([parkingArea[i][0], parkingArea[i][5], parkingArea[i][1], parkingArea[i][2], (parkingArea[i][3] == -1 ? "Nessun parcheggio occupato" : parkingArea[i][3])]).draw(false);
+            for (let i = 0; i < parkingArea.length; i++){
+                SmartMap.getAddress(JSON.parse(parkingArea[i][5])).then(address=>{
+                    table.row.add([parkingArea[i][0], address, parkingArea[i][1], parkingArea[i][2], (parkingArea[i][3] == -1 ? "Nessun parcheggio occupato" : parkingArea[i][3])]).draw(false);
+                })
+            }
 
             $('#attachTable tbody').on('click', 'tr', function () {
                 updateParkingArea($('#attachTable').DataTable().row(this).data()[0]);
@@ -16,17 +19,19 @@ function printParkingArea() {
 }
 
 function sendUpdate(id) {
-    const price = $("#priceOfParkingArea").val();
-    const address = $("#addressOfParkingArea").val();
+    const price = ($("#euroPrezzo").inputmask('unmaskedvalue')) / 100;
+    const address = JSON.stringify(SmartMap.getCoordinate());
     const numberOfSpot = $("#numberOfSpot").val();
     const convert = new EtherExchange();
     convert.euroToEther(price).then(ether => {
         updateParkingAreaConfirm(id, web3.toWei(ether, "ether"), address, numberOfSpot);
+        $("#updateParkingArea").empty();
+        $("#showParkingAreaTable").show();
     })
-    $("#updateParkingArea").empty();
 }
 
 function updateParkingArea(id) {
+    $("#showParkingAreaTable").hide();
     const updateArea = $("#updateParkingArea");
     updateArea.empty();
     updateArea.load(`updateParkingAreaForm.html`, () => {
@@ -58,8 +63,8 @@ function updateParkingAreaConfirm(id, price, address, numberOfSpot) {
 
 
 function addParkingArea() {
-    const price = $("#priceOfParkingArea").val();
-    const address = $("#addressOfParkingArea").val();
+    const price = ($("#euroPrezzo").inputmask('unmaskedvalue')) / 100;
+    const address = JSON.stringify(SmartMap.getCoordinate());
     const numberOfSpot = $("#numberOfSpot").val();
     const convert = new EtherExchange();
     convert.euroToEther(price).then(ether => {
@@ -86,4 +91,8 @@ function addParkingAreaConfirm(price, address, numberOfSpot) {
             swal("Annullato", "Il parcheggio non è stato aggiunto", "error");
         }
     });
+}
+
+function printMap(idMap) {
+    SmartMap.initMap(idMap,true);
 }

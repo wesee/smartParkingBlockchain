@@ -151,19 +151,18 @@ contract SmartParking is Migrations{
 
     function getReceipt(uint8 idParkingArea, uint16 idSpot,uint _now) public view returns (uint){
         require(needToPay(idParkingArea, idSpot,_now),"No receipt found");
-        uint8 hour = uint8((((parkingArea[idParkingArea].spot[idSpot].finish-parkingArea[idParkingArea].spot[idSpot].start))/60/60));
+        uint hour = ((((parkingArea[idParkingArea].spot[idSpot].finish-parkingArea[idParkingArea].spot[idSpot].start))/60/60));
         return (hour*(parkingArea[idParkingArea].price));
     }
     function paySpot(uint8 idParkingArea, uint16 idSpot, uint _now) public payable{
         require(needToPay(idParkingArea,idSpot,_now),"Spot payment error");
-        uint8 hour = uint8((((parkingArea[idParkingArea].spot[idSpot].finish-parkingArea[idParkingArea].spot[idSpot].start))/60/60));
+        uint hour = ((((parkingArea[idParkingArea].spot[idSpot].finish-parkingArea[idParkingArea].spot[idSpot].start))/60/60));
         require((hour*(parkingArea[idParkingArea].price)) == msg.value,"The amount send is incorrect");
         parkingArea[idParkingArea].spot[idSpot].paid = true;
         owner.transfer(msg.value);
     }
     
     function () public payable {
-
     }
 
     ParkingArea[] private parkingArea;

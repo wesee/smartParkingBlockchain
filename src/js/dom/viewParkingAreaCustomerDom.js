@@ -1,22 +1,19 @@
-function printParkingArea() {
+function printParkingArea(idMap) {
     const parkingAreaPromise = SmartParking.getAllParkingArea()
-
+    const map = SmartMap;
+    map.initMap(idMap);
     parkingAreaPromise.then(allParkingArea => {
         Promise.all(allParkingArea).then(parkingArea => {
-            const table = $('#attachTable').DataTable();
-            table.clear();
             const exchange = new EtherExchange();
             for (let i = 0; i < parkingArea.length; i++) {
                 exchange.etherToEuro(web3.fromWei(parkingArea[i][4],"ether")).then(euro => {
                     let rounded = euro.toFixed(2);
-                    table.row.add([parkingArea[i][0], parkingArea[i][5], rounded, (parkingArea[i][2] == 0 ? "Nessun parcheggio disponibile" : parkingArea[i][2])]).draw(false);
+                    map.addMarker(JSON.parse(parkingArea[i][5]),{id:parkingArea[i][0],price:rounded,spotFree: parkingArea[i][2]},()=>{
+                        $(mapCustomer).hide();
+                        reserveSpot(parkingArea[i][0]);
+                    })
                 })
             }
-            $('#attachTable tbody').on('click', 'tr', function () {
-                if ($('#attachTable').DataTable().row(this).data()[3] > 0)
-                    reserveSpot($('#attachTable').DataTable().row(this).data()[0]);
-            });
-            $("#attachTable > tbody").css("cursor", "pointer")
         })
     })
 }

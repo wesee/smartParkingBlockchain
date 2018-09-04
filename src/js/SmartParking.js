@@ -26,7 +26,7 @@ SmartParking = {
         $.getJSON("SmartParking.json", function (smartParking) {
             SmartParking.contracts.SmartParking = TruffleContract(smartParking);
             SmartParking.contracts.SmartParking.setProvider(SmartParking.web3Provider);
-            return SmartParking.render();
+            SmartParking.render();
         });
     },
     reloadPage: function (data, error) {
@@ -131,7 +131,6 @@ SmartParking = {
                     }
                     res(allParkingArea);
                 })
-
             }).catch((err) => console.log(err))
         })
     },
@@ -146,8 +145,7 @@ SmartParking = {
     },
     paySpot: function (idParkingArea, idSpot) {
         SmartParking.contracts.SmartParking.deployed().then(function (instance) {
-            const pricePromise = SmartParking.getReceipt(idParkingArea, idSpot);
-            pricePromise.then(price => {
+            SmartParking.getReceipt(idParkingArea, idSpot).then(price => {
                 instance.paySpot(idParkingArea, idSpot, moment(new Date(), "D/M/YYYY H:mm").unix(), {
                     from: SmartParking.account, gasPrice: 2000000000, value: price
                 }).catch((err) => console.log(err));
