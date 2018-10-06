@@ -5,8 +5,8 @@ function printParkingArea() {
             const table = $('#attachTable').DataTable();
             table.clear();
             for (let i = 0; i < parkingArea.length; i++){
-                SmartMap.getAddress(JSON.parse(parkingArea[i][5])).then(address=>{
-                    table.row.add([parkingArea[i][0], address, parkingArea[i][1], parkingArea[i][2], (parkingArea[i][3] == -1 ? "Nessun parcheggio occupato" : parkingArea[i][3])]).draw(false);
+                SmartMap.getAddress(JSON.parse(parkingArea[i][4])).then(address=>{
+                    table.row.add([parkingArea[i][0], address, parkingArea[i][1], "VEDI DOPO", (parkingArea[i][2] == -1 ? "Nessun parcheggio occupato" : parkingArea[i][3])]).draw(false);
                 })
             }
 

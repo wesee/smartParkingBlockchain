@@ -71,7 +71,7 @@ SmartParking = {
                 var allParkingArea = [];
                 instance.getParkingAreaCount().then(count => {
                     for (let i = 0; i < count.toNumber(); i++) {
-                        allParkingArea.push(instance.getParkingArea(i, moment(new Date(), "D/M/YYYY H:mm").unix()));
+                        allParkingArea.push(instance.getParkingArea(i));
                     }
                     res(allParkingArea);
                 })

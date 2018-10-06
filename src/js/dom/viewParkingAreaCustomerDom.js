@@ -6,12 +6,9 @@ function printParkingArea(idMap) {
         Promise.all(allParkingArea).then(parkingArea => {
             const exchange = new EtherExchange();
             for (let i = 0; i < parkingArea.length; i++) {
-                exchange.etherToEuro(web3.fromWei(parkingArea[i][4],"ether")).then(euro => {
+                exchange.etherToEuro(web3.fromWei(parkingArea[i][3],"ether")).then(euro => {
                     let rounded = euro.toFixed(2);
-                    map.addMarker(JSON.parse(parkingArea[i][5]),{id:parkingArea[i][0],price:rounded,spotFree: parkingArea[i][2]},()=>{
-                        $(mapCustomer).hide();
-                        reserveSpot(parkingArea[i][0]);
-                    })
+                    map.addMarker(JSON.parse(parkingArea[i][4]),{id:parkingArea[i][0],price:rounded})
                 })
             }
         })
@@ -19,17 +16,12 @@ function printParkingArea(idMap) {
 }
 
 function reserveSpot(id) {
+    console.log("kek")
     $("#reserveSpot").empty();
     $("#reserveSpot").load(`reserveSpotForm.html`, () => {
         $("#titleReservation").replaceWith('<h2 id="titleReservation">INSERIRE DATI PER PRENOTARE POSTO AL PARCHEGGIO ' + id + '</h2>');
         $("#buttonReservation").replaceWith('<button onclick="reserveSelectSpot(' + id + ')" class="btn bg-red waves-effect" type="button">Prenota</button>')
-        $('#startTime').bootstrapMaterialDatePicker({
-            format: 'DD/MM/YYYY HH:mm', 
-            minDate: new Date(), 
-            clearButton: true, 
-            weekStart: 1
-        });
-        $("#finishTime").prop('disabled', true);
+       
 
         SmartParking.getSpots(id).then(spotPromise => {
             Promise.all(spotPromise).then(spots => {
@@ -45,15 +37,15 @@ function reserveSpot(id) {
 
 }
 
-function reserveSelectSpot(id) {
+function reserveSpot() {
     const plate = $("#plate").val();
     const start = moment($('#startTime').val(), "D/M/YYYY H:mm").unix()
     const finish = moment($('#finishTime').val(), "D/M/YYYY H:mm").unix()
     const spot = $("#spotSelect").val();
-    reserveSelectSpotConfirm(id, plate, start, finish, spot)
+    reserveSelectSpotConfirm(plate, start, finish, spot)
 }
 
-function reserveSelectSpotConfirm(id, plate, start, finish, spot) {
+function reserveSelectSpotConfirm(plate, start, finish, spot) {
     swal({
         title: "Sei sicuro?",
         text: "Vuoi confermare la tua prenotazione",

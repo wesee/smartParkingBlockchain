@@ -56,12 +56,12 @@ SmartMap = {
         addMarker: function (loc, data, callback) {
                 let markerText = $('<a></a>');
                 markerText.css('cursor', 'pointer');
-                if (callback && data.spotFree > 0) {
+                if (callback) {
                         markerText.click(function (e) { e.preventDefault(); callback(); });
                 }
                 L.esri.Geocoding.geocodeService().reverse().latlng(loc).run(function (error, result) {
                         markerText.html(result.address.Match_addr +
-                                "</br>Prezzo Orario: " + data.price + `</br>Posti disponibili: ` + data.spotFree + `</a>`);
+                                "</br>Prezzo Orario: " + data.price + `</a>`);
                         SmartMap.Results.addLayer(L.marker(result.latlng).addTo(SmartMap.Map)
                                 .bindPopup(markerText.get(0)));
                 });
