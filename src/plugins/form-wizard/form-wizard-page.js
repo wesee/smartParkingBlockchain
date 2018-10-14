@@ -31,6 +31,7 @@ $(function () {
             return form.valid();
         },
         onFinished: function (event, currentIndex) {
+
             reserveSpot();
         }
     });

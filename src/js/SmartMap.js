@@ -20,7 +20,7 @@ SmartMap = {
                 navigator.geolocation.getCurrentPosition(geo_success, geo_error, geo_options);
 
                 function createMapInPosition(lat, lng) {
-                        if(SmartMap.Map!=null){
+                        if (SmartMap.Map != null) {
                                 SmartMap.Map.off();
                                 SmartMap.Map.remove();
                         }
@@ -53,17 +53,20 @@ SmartMap = {
                 })
 
         },
+        onClick: function (callback) {
+                var markersLayer = L.featureGroup().addTo(SmartMap.Map);
+                markersLayer.on("click", callback)
+        },
         addMarker: function (loc, data, callback) {
                 let markerText = $('<a></a>');
                 markerText.css('cursor', 'pointer');
-                if (callback) {
-                        markerText.click(function (e) { e.preventDefault(); callback(); });
-                }
                 L.esri.Geocoding.geocodeService().reverse().latlng(loc).run(function (error, result) {
                         markerText.html(result.address.Match_addr +
                                 "</br>Prezzo Orario: " + data.price + `</a>`);
-                        SmartMap.Results.addLayer(L.marker(result.latlng).addTo(SmartMap.Map)
-                                .bindPopup(markerText.get(0)));
+                        const marker = L.marker(result.latlng).addTo(SmartMap.Map)
+                                .bindPopup(markerText.get(0))
+                        marker.on('click', callback);
+                        SmartMap.Results.addLayer(marker);
                 });
         }
 };
