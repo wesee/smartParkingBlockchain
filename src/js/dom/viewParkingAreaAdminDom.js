@@ -6,7 +6,7 @@ function printParkingArea() {
             table.clear();
             for (let i = 0; i < parkingArea.length; i++){
                 SmartMap.getAddress(JSON.parse(parkingArea[i][5])).then(address=>{
-                    table.row.add([parkingArea[i][0], address, parkingArea[i][1], parkingArea[i][2], (parkingArea[i][3] == -1 ? "Nessun parcheggio occupato" : parkingArea[i][3])]).draw(false);
+                    table.row.add([parkingArea[i][0], address, parkingArea[i][1], parkingArea[i][2], (parkingArea[i][3] == -1 ? "no busy parking" : parkingArea[i][3])]).draw(false);
                 })
             }
 
@@ -42,8 +42,8 @@ function updateParkingArea(id) {
 
 function updateParkingAreaConfirm(id, price, address, numberOfSpot) {
     swal({
-        title: "Sei sicuro?",
-        text: "Vuoi modificare i dati relativi al tuo parcheggio",
+        title: "are you sure?",
+        text: "you want to change the data related to your parking",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
@@ -53,10 +53,10 @@ function updateParkingAreaConfirm(id, price, address, numberOfSpot) {
         closeOnCancel: false
     }, function (isConfirm) {
         if (isConfirm) {
-            swal("Dati modificati!", "I dati sono stati modificati con successo.", "success");
+            swal("modified data!", "the data has been changed successfully", "success");
             SmartParking.updateParkingArea(id, price, address, numberOfSpot);
         } else {
-            swal("Cancellata", "Non sono stati modificati i tuoi dati", "error");
+            swal("deleted", "your data has not been changed", "error");
         }
     });
 }
@@ -74,8 +74,8 @@ function addParkingArea() {
 
 function addParkingAreaConfirm(price, address, numberOfSpot) {
     swal({
-        title: "Sei sicuro?",
-        text: "Vuoi aggiungere un nuovo parcheggio",
+        title: "are you sure?",
+        text: "do you want to add a new parking space",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
@@ -85,10 +85,10 @@ function addParkingAreaConfirm(price, address, numberOfSpot) {
         closeOnCancel: false
     }, function (isConfirm) {
         if (isConfirm) {
-            swal("Parcheggio aggiunto!", "Parcheggio aggiunto con succeesso.", "success");
+            swal("added parking!", "parking added with success", "success");
             SmartParking.createNewParkingArea(price, address, numberOfSpot);
         } else {
-            swal("Annullato", "Il parcheggio non è stato aggiunto", "error");
+            swal("canceled", "parking has not been added", "error");
         }
     });
 }
