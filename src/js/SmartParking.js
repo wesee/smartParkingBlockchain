@@ -4,12 +4,23 @@ SmartParking = {
     account: null,
     isAdmin: false,
 
-    initWeb3: function () {
+    initWeb3: async function () {
         if (typeof web3 !== 'undefined') {
             if (web3.currentProvider.isMetaMask === true) {
                 SmartParking.web3Provider = web3.currentProvider;
                 web3 = new Web3(web3.currentProvider);
-                web3.currentProvider.publicConfigStore.on('update', SmartParking.reloadPage);
+                //web3.currentProvider.publicConfigStore.on('update', SmartParking.reloadPage);
+                try {
+                    // Request account access if needed
+                    await ethereum.enable();
+                    // Acccounts now exposed
+                    // web3.eth.sendTransaction({/* ... */});
+                    web3.currentProvider.publicConfigStore.on('update', SmartParking.reloadPage);
+                } catch (error) {
+                    // User denied account access...
+                }
+
+
             } else {
                 console.log("metamask is not available")
             }
@@ -60,6 +71,7 @@ SmartParking = {
         }).then(function (isAdmin) {
             SmartParking.isAdmin = isAdmin;
             console.log('isadmin is ' + isAdmin);
+            console.log(typeof isAdmin);
 
             if (!isAdmin)
                 createUserPage();
