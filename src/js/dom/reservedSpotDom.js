@@ -34,8 +34,8 @@ function printReservedSpot() {
 
 function PaySelectSpot(parkingAreaId, spotId) {
     swal({
-        title: "Sei sicuro?",
-        text: "Vuoi confermare il pagamento",
+        title: "are you sure?",
+        text: "do you want to confirm payment",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
@@ -45,10 +45,10 @@ function PaySelectSpot(parkingAreaId, spotId) {
         closeOnCancel: false
     }, function (isConfirm) {
         if (isConfirm) {
-            swal("Pagato!", "Il pagamento è andato a buon fine.", "success");
+            swal("paid!", "the payment has been successful", "success");
             SmartParking.paySpot(parkingAreaId, spotId);
         } else {
-            swal("Cancellata", "il pagamento è stato cancellato", "error");
+            swal("canceled", "the payment has been canceled", "error");
         }
     });
 }

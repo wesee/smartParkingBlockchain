@@ -47,8 +47,8 @@ function updateParkingAreaConfirm(id, price, address, numberOfSpot) {
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
-        confirmButtonText: "Si",
-        cancelButtonText: "No",
+        confirmButtonText: "yes",
+        cancelButtonText: "no",
         closeOnConfirm: false,
         closeOnCancel: false
     }, function (isConfirm) {

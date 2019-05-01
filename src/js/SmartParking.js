@@ -59,6 +59,8 @@ SmartParking = {
             return instance.isOwner();
         }).then(function (isAdmin) {
             SmartParking.isAdmin = isAdmin;
+            console.log('isadmin is ' + isAdmin);
+
             if (!isAdmin)
                 createUserPage();
             else

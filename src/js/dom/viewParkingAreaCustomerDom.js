@@ -21,8 +21,8 @@ function printParkingArea(idMap) {
 function reserveSpot(id) {
     $("#reserveSpot").empty();
     $("#reserveSpot").load(`reserveSpotForm.html`, () => {
-        $("#titleReservation").replaceWith('<h2 id="titleReservation">INSERIRE DATI PER PRENOTARE POSTO AL PARCHEGGIO ' + id + '</h2>');
-        $("#buttonReservation").replaceWith('<button onclick="reserveSelectSpot(' + id + ')" class="btn bg-red waves-effect" type="button">Prenota</button>')
+        $("#titleReservation").replaceWith('<h2 id="titleReservation">enter data to book parking place ' + id + '</h2>');
+        $("#buttonReservation").replaceWith('<button onclick="reserveSelectSpot(' + id + ')" class="btn bg-red waves-effect" type="button">Book</button>')
         $('#startTime').bootstrapMaterialDatePicker({
             format: 'DD/MM/YYYY HH:mm', 
             minDate: new Date(), 
@@ -55,21 +55,21 @@ function reserveSelectSpot(id) {
 
 function reserveSelectSpotConfirm(id, plate, start, finish, spot) {
     swal({
-        title: "Sei sicuro?",
-        text: "Vuoi confermare la tua prenotazione",
+        title: "are you sure?",
+        text: "you want to confirm your reservation",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
-        confirmButtonText: "Si",
-        cancelButtonText: "No",
+        confirmButtonText: "yes",
+        cancelButtonText: "no",
         closeOnConfirm: false,
         closeOnCancel: false
     }, function (isConfirm) {
         if (isConfirm) {
-            swal("Prenotato!", "La tua prenotazione è andata a buon fine.", "success");
+            swal("paid!", "your reservation was successful", "success");
             SmartParking.reserveSpot(id, plate, start, finish, spot);
         } else {
-            swal("Cancellata", "La prenotazione non è stata confermata", "error");
+            swal("canceled", "the reservation has not been confirmed", "error");
         }
     });
 }

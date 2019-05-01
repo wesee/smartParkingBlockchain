@@ -42,7 +42,7 @@ function createMetamaskNotFound() {
 }
 
 function writeAccountInDom(account) {
-    $("#WalletAddress").html("Account: " + SmartParking.account);
+    $("#WalletAddress").html("account: " + SmartParking.account);
     const data = new Identicon(SmartParking.account).toString();
     $("#imageUserIdenticon").attr("src", "data:image/png;base64," + data);
 }
