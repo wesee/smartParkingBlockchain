@@ -8,7 +8,8 @@ SmartMap = {
                         createMapInPosition(position.coords.latitude, position.coords.longitude);
                 }
                 function geo_error() {
-                        createMapInPosition(45.5384, -122.6695);
+                        createMapInPosition(3.10662, 101.449727);
+                        //createMapInPosition(45.5384, -122.6695);
                 }
 
                 var geo_options = {
@@ -24,7 +25,8 @@ SmartMap = {
                                 SmartMap.Map.off();
                                 SmartMap.Map.remove();
                         }
-                        SmartMap.Map = L.map(idMap).setView([lat, lng], 10);
+                        //SmartMap.Map = L.map(idMap).setView([lat, lng], 10);
+                        SmartMap.Map = L.map(idMap).setView([lat, lng], 15);
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                                 attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
                         }).addTo(SmartMap.Map);
@@ -61,7 +63,7 @@ SmartMap = {
                 }
                 L.esri.Geocoding.geocodeService().reverse().latlng(loc).run(function (error, result) {
                         markerText.html(result.address.Match_addr +
-                                "</br>Prezzo Orario: " + data.price + `</br>Posti disponibili: ` + data.spotFree + `</a>`);
+                                "</br>price time: " + data.price + `</br>available lot: ` + data.spotFree + `</a>`);
                         SmartMap.Results.addLayer(L.marker(result.latlng).addTo(SmartMap.Map)
                                 .bindPopup(markerText.get(0)));
                 });

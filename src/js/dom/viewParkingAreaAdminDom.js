@@ -35,8 +35,8 @@ function updateParkingArea(id) {
     const updateArea = $("#updateParkingArea");
     updateArea.empty();
     updateArea.load(`updateParkingAreaForm.html`, () => {
-        $("#titleParkingArea").replaceWith('<h2>Modifica il parcheggio ' + id + '</h2>');
-        $("#buttonParkingArea").replaceWith('<button type="button" onclick="sendUpdate(' + id + ')" class="btn btn-primary btn-lg m-l-15 waves-effect">Modifica</button>')
+        $("#titleParkingArea").replaceWith('<h2>change the parking lot ' + id + '</h2>');
+        $("#buttonParkingArea").replaceWith('<button type="button" onclick="sendUpdate(' + id + ')" class="btn btn-primary btn-lg m-l-15 waves-effect">update</button>')
     });
 }
 
@@ -79,8 +79,8 @@ function addParkingAreaConfirm(price, address, numberOfSpot) {
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
-        confirmButtonText: "Si",
-        cancelButtonText: "No",
+        confirmButtonText: "yes",
+        cancelButtonText: "no",
         closeOnConfirm: false,
         closeOnCancel: false
     }, function (isConfirm) {

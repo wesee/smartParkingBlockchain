@@ -2,7 +2,7 @@
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="header">
-                <h2 id="titleReservation">INSERIRE DATI PER PRENOTARE POSTO AL PARCHEGGIO</h2>
+                <h2 id="titleReservation">enter data to book parking lot</h2>
                 <ul class="header-dropdown m-r--5">
                     <li>
                         <button onclick='$("#reserveForm").remove();$(mapCustomer).show();' type="button" class="close" aria-label="Close">
@@ -15,19 +15,19 @@
                 <form id="form_validation" method="POST">
                     <div class="form-group form-float">
                         <div class="form-line">
-                            <input type="text" class="form-control" name="targa" id="plate" placeholder="Targa" required>
+                            <input type="text" class="form-control" name="targa" id="plate" placeholder="license plate" required>
                         </div>
                     </div>
                     <div class="form-group form-float">
                         <div class="form-group">
                             <div class="form-line">
                                 <input onblur='$("#finishTime").prop("disabled",false);$("#finishTime").bootstrapMaterialDatePicker({ format : "DD/MM/YYYY HH:mm", minDate : new Date()})'
-                                    type="text" id="startTime" class="datetimepicker form-control" placeholder="Tempo di inizio">
+                                    type="text" id="startTime" class="datetimepicker form-control" placeholder="start time">
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="form-line">
-                                <input type="text" id="finishTime" class="datetimepicker form-control" placeholder="Tempo di fine">
+                                <input type="text" id="finishTime" class="datetimepicker form-control" placeholder="end time">
                             </div>
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                             </select>
                         </div>
                     </div>
-                    <button id="buttonReservation" onclick="reserveSelectSpot()" class="btn bg-red waves-effect" type="button" data-type="confirm">>Prenota</button>
+                    <button id="buttonReservation" onclick="reserveSelectSpot()" class="btn bg-red waves-effect" type="button" data-type="confirm">>book</button>
                 </form>
             </div>
         </div>
